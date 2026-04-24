@@ -1,0 +1,83 @@
+---
+import { getLocaleName, getLocalizedUrl } from 'intlayer';
+import { useIntlayer, useLocale } from 'astro-intlayer';
+
+const { locale, pathWithoutLocale, availableLocales } = useLocale(Astro);
+const { localeSwitcherLabel } = useIntlayer(Astro, 'locale-switcher');
+
+const localesDetails = availableLocales.map((localeItem) => ({
+  locale: localeItem,
+  ownLocaleName: getLocaleName(localeItem),
+  currentLocaleName: getLocaleName(localeItem, locale),
+  url: getLocalizedUrl(pathWithoutLocale, localeItem),
+}));
+---
+
+<div
+  class="relative w-auto rounded-xl p-2"
+  aria-label={localeSwitcherLabel.value}
+>
+  <details class="group">
+    <summary
+      class="flex w-full cursor-pointer items-center justify-between list-none focus:outline-none"
+    >
+      <span class="px-2">{getLocaleName(locale)}</span>
+      <span class="text-sm transition-transform group-open:rotate-180">▼</span>
+    </summary>
+
+    <div
+      class="absolute top-full right-0 z-10 mt-2 min-w-[240px] rounded-xl bg-neutral-900 border border-neutral-800 shadow-xl overflow-hidden"
+    >
+      <ul
+        class="max-h-[60vh] divide-y divide-neutral-800 overflow-y-auto backdrop-blur-md bg-neutral-900/90"
+      >
+        {
+          localesDetails.map(
+            ({ locale: localeItem, currentLocaleName, ownLocaleName, url }) => (
+              <li>
+                <a
+                  href={url}
+                  class:list={[
+                    'flex w-full flex-row items-center justify-between gap-4 p-3 text-left no-underline transition-colors',
+                    locale === localeItem
+                      ? 'bg-neutral-800 text-white'
+                      : 'text-neutral-400 hover:bg-neutral-800 hover:text-white',
+                  ]}
+                >
+                  <div class="flex flex-col gap-0.5">
+                    <span
+                      dir="auto"
+                      lang={localeItem}
+                      class="text-sm font-medium"
+                    >
+                      {ownLocaleName}
+                    </span>
+                    <span class="text-neutral-500 text-xs">
+                      {currentLocaleName}
+                    </span>
+                  </div>
+                  <span class="text-neutral-600 font-mono text-[10px] tracking-wider uppercase">
+                    {localeItem}
+                  </span>
+                </a>
+              </li>
+            )
+          )
+        }
+      </ul>
+    </div>
+  </details>
+</div>
+
+<style>
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary {
+    list-style: none;
+  }
+
+  /* Close dropdown when clicking outside (optional, but nice) */
+  /* For a pure Astro component without a client script, it stays open until toggled or navigating */
+</style>
