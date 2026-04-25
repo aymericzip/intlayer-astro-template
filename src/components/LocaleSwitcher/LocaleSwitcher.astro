@@ -1,64 +1,68 @@
 ---
-import { getLocaleName, getLocalizedUrl } from 'intlayer';
-import { useIntlayer, useLocale } from 'astro-intlayer';
+import {
+  getIntlayer,
+  getHTMLTextDir,
+  getLocaleName,
+  getLocalizedUrl,
+  getLocaleFromPath,
+  getPathWithoutLocale,
+  locales,
+  type LocalesValues,
+} from 'intlayer';
 
-const { locale, pathWithoutLocale, availableLocales } = useLocale(Astro);
-const { localeSwitcherLabel } = useIntlayer(Astro, 'locale-switcher');
+const locale = getLocaleFromPath(Astro.url.pathname) as LocalesValues;
+const pathWithoutLocale = getPathWithoutLocale(Astro.url.pathname);
+const { localeSwitcherLabel } = getIntlayer('locale-switcher', locale);
 
-const localesDetails = availableLocales.map((localeItem) => ({
+const localesDetails = locales.map((localeItem) => ({
   locale: localeItem,
   ownLocaleName: getLocaleName(localeItem),
   currentLocaleName: getLocaleName(localeItem, locale),
   url: getLocalizedUrl(pathWithoutLocale, localeItem),
+  isCurrent: localeItem === locale,
 }));
 ---
 
-<div
-  class="relative w-auto rounded-xl p-2"
-  aria-label={localeSwitcherLabel.value}
->
-  <details class="group">
-    <summary
-      class="flex w-full cursor-pointer items-center justify-between list-none focus:outline-none"
-    >
-      <span class="px-2">{getLocaleName(locale)}</span>
-      <span class="text-sm transition-transform group-open:rotate-180">▼</span>
+<div class="ls-root" aria-label={localeSwitcherLabel.value}>
+  <details class="ls-details">
+    <summary class="ls-trigger">
+      <span>{getLocaleName(locale)}</span>
+      <svg class="ls-chevron" width="11" height="11" viewBox="0 0 12 12" fill="none">
+        <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </summary>
 
-    <div
-      class="absolute top-full right-0 z-10 mt-2 min-w-[240px] rounded-xl bg-neutral-900 border border-neutral-800 shadow-xl overflow-hidden"
-    >
-      <ul
-        class="max-h-[60vh] divide-y divide-neutral-800 overflow-y-auto backdrop-blur-md bg-neutral-900/90"
-      >
+    <div class="ls-dropdown">
+      <ul class="ls-list">
         {
           localesDetails.map(
-            ({ locale: localeItem, currentLocaleName, ownLocaleName, url }) => (
+            ({
+              locale: localeItem,
+              ownLocaleName,
+              currentLocaleName,
+              url,
+              isCurrent,
+            }) => (
               <li>
                 <a
                   href={url}
+                  data-locale={localeItem}
                   class:list={[
-                    'flex w-full flex-row items-center justify-between gap-4 p-3 text-left no-underline transition-colors',
-                    locale === localeItem
-                      ? 'bg-neutral-800 text-white'
-                      : 'text-neutral-400 hover:bg-neutral-800 hover:text-white',
+                    "ls-item",
+                    { "ls-item--active": isCurrent },
                   ]}
                 >
-                  <div class="flex flex-col gap-0.5">
+                  <div class="ls-item-left">
                     <span
-                      dir="auto"
+                      class="ls-own-name"
+                      dir={getHTMLTextDir(localeItem)}
                       lang={localeItem}
-                      class="text-sm font-medium"
                     >
                       {ownLocaleName}
                     </span>
-                    <span class="text-neutral-500 text-xs">
-                      {currentLocaleName}
-                    </span>
+                    <span class="ls-current-name">{currentLocaleName}</span>
                   </div>
-                  <span class="text-neutral-600 font-mono text-[10px] tracking-wider uppercase">
-                    {localeItem}
-                  </span>
+                  <span class="ls-code">{localeItem.toUpperCase()}</span>
                 </a>
               </li>
             )
@@ -70,14 +74,161 @@ const localesDetails = availableLocales.map((localeItem) => ({
 </div>
 
 <style>
-  summary::-webkit-details-marker {
-    display: none;
+  .ls-root { position: relative; }
+  .ls-details { position: relative; }
+
+  summary.ls-trigger {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #f8fafc;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    backdrop-filter: blur(8px);
+  }
+  summary.ls-trigger::-webkit-details-marker { display: none; }
+  
+  .ls-details[open] summary.ls-trigger,
+  summary.ls-trigger:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
   }
 
-  summary {
+  .ls-chevron {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+  .ls-details[open] .ls-chevron { transform: rotate(180deg); }
+
+  .ls-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 220px;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    z-index: 200;
+    padding: 6px;
+    animation: slideDown 0.2s ease-out;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ls-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ls-list li {
     list-style: none;
   }
 
-  /* Close dropdown when clicking outside (optional, but nice) */
-  /* For a pure Astro component without a client script, it stays open until toggled or navigating */
+  .ls-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+  }
+  
+  .ls-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.05);
+    text-decoration: none;
+  }
+  
+  .ls-item--active {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+
+  .ls-item-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ls-own-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #ffffff; /* White title */
+    line-height: 1.2;
+  }
+
+  .ls-current-name {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #94a3b8; /* Smaller and muted below */
+  }
+
+  .ls-code {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  .ls-item--active .ls-code {
+    color: #818cf8;
+    background: rgba(99, 102, 241, 0.1);
+  }
 </style>
+
+<script>
+  import { useLocale } from "vanilla-intlayer";
+  import { getLocalizedUrl, type LocalesValues } from "intlayer";
+
+  // Update the locale cookie when a language is selected
+  // This helps the middleware to remember the preference and prevents redirect loops
+  const { setLocale } = useLocale({
+    onLocaleChange: (newLocale) => {
+      window.location.href = getLocalizedUrl(
+        window.location.pathname,
+        newLocale
+      );
+    },
+  });
+
+  const localeLinks = document.querySelectorAll("[data-locale]");
+
+  localeLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const locale = link.getAttribute("data-locale") as LocalesValues;
+
+      if (locale) {
+        e.preventDefault();
+        setLocale(locale);
+      }
+    });
+  });
+</script>

@@ -1,13 +1,13 @@
 /**
-* Intlayer configuration file documentation 
-* @see https://intlayer.org/doc/concept/configuration
-*/
+ * Intlayer configuration file documentation
+ * @see https://intlayer.org/doc/concept/configuration
+ */
 
-import { type IntlayerConfig, Locales } from 'intlayer';
+import { type IntlayerConfig, Locales } from "intlayer";
 
 const config: IntlayerConfig = {
   internationalization: {
-    locales: [Locales.ENGLISH],
+    locales: [Locales.ENGLISH, Locales.FRENCH, Locales.SPANISH],
     /**
      * Default locale used as a fallback if the requested locale is not found.
      */
@@ -22,7 +22,7 @@ const config: IntlayerConfig = {
      * - "search-params": Use search params to define the locale (e.g., /dashboard/?locale=en, /dashboard/?locale=fr)
      * Default: "prefix-no-default"
      */
-    mode: 'prefix-no-default',
+    mode: "prefix-no-default",
   },
   editor: {
     /**
@@ -33,22 +33,22 @@ const config: IntlayerConfig = {
     /**
      * URL of your application for origin validation.
      */
-    applicationURL: 'http://localhost:3000',
+    applicationURL: "http://localhost:3000",
   },
   ai: {
     /**
      * AI provider to use.
      * Options: 'openai', 'anthropic', 'mistral', 'deepseek', 'gemini', 'ollama', 'openrouter', 'alibaba', 'fireworks', 'groq', 'huggingface', 'bedrock', 'googlevertex', 'togetherai'
      */
-    provider: 'openai',
-    model: 'gpt-5-mini',
+    provider: "openai",
+    model: "gpt-5-mini",
     apiKey: process.env.OPENAI_API_KEY,
     /**
      * Additional context for the translations
-     * 
+     *
      * Can be use in addition of the dictionary `description` field
      */
-    applicationContext: [''].join('\n'),
+    applicationContext: [""].join("\n"),
   },
   compiler: {
     enabled: true,
@@ -75,7 +75,7 @@ const config: IntlayerConfig = {
      *   output: ({ key, locale }) => `/locales/${locale}/${key}.content.json`,
      * }
      * ```
-     * 
+     *
      * Variable list:
      *   - `fileName`: The name of the file.
      *   - `key`: The key of the content.
@@ -105,19 +105,19 @@ const config: IntlayerConfig = {
      * - "dynamic": Dynamically imported using Suspense.
      * - "fetch": Fetched dynamically via the live sync API.
      */
-    importMode: 'static',
+    importMode: "static",
   },
   build: {
     /**
      * (Experimental feature)
-     * 
+     *
      * Minify the dictionaries to reduce the bundle size.
      */
     minify: true,
 
     /**
      * (Experimental feature)
-     * 
+     *
      * Purge the unused keys in a dictionaries
      */
     purge: true,
@@ -126,7 +126,7 @@ const config: IntlayerConfig = {
      * Indicates if the build should check TypeScript types
      */
     checkTypes: false,
-  }
+  },
 };
 
 export default config;
