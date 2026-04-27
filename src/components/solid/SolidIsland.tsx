@@ -1,22 +1,22 @@
 /** @jsxImportSource solid-js */
 import { createSignal } from "solid-js";
 import { IntlayerProvider, useIntlayer, useLocale } from "solid-intlayer";
-import { getLocalizedUrl, getLocaleName, getPathWithoutLocale, type Locales, type LocalesValues } from "intlayer";
-
+import { getLocalizedUrl, getLocaleName, type LocalesValues } from "intlayer";
 
 function LocaleSwitcher() {
+  const content = useIntlayer("solid-demo");
   const { locale, availableLocales, setLocale } = useLocale({
     onLocaleChange: (newLocale: LocalesValues) => {
       window.location.href = getLocalizedUrl(
         window.location.pathname,
-        newLocale
+        newLocale,
       );
     },
   });
 
   return (
     <div class="locale-switcher">
-      <span class="switcher-label">Switch locale:</span>
+      <span class="switcher-label">{content().switchLocale}:</span>
       <div class="locale-buttons">
         {availableLocales.map((localeItem) => (
           <button

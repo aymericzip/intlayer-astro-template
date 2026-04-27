@@ -1,22 +1,23 @@
 /** @jsxImportSource preact */
 import { useState } from "preact/hooks";
 import { IntlayerProvider, useIntlayer, useLocale } from "preact-intlayer";
-import { getLocalizedUrl, getLocaleName, getPathWithoutLocale, type Locales, type LocalesValues } from "intlayer";
-
+import { getLocalizedUrl, getLocaleName, type LocalesValues } from "intlayer";
 
 function LocaleSwitcher() {
+  const { switchLocale } = useIntlayer("preact-demo");
+
   const { locale, availableLocales, setLocale } = useLocale({
     onLocaleChange: (newLocale: LocalesValues) => {
       window.location.href = getLocalizedUrl(
         window.location.pathname,
-        newLocale
+        newLocale,
       );
     },
   });
 
   return (
     <div class="locale-switcher">
-      <span class="switcher-label">Switch locale:</span>
+      <span class="switcher-label">{switchLocale}:</span>
       <div class="locale-buttons">
         {availableLocales.map((localeItem) => (
           <button
@@ -40,7 +41,8 @@ function LocaleSwitcher() {
 
 function PreactDemo() {
   const [count, setCount] = useState(0);
-  const { greeting, description, counter, increment } = useIntlayer("preact-demo");
+  const { greeting, description, counter, increment } =
+    useIntlayer("preact-demo");
 
   return (
     <div class="demo-container">

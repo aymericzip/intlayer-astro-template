@@ -1,6 +1,6 @@
 import { LitElement, html } from "lit";
 import { installIntlayer, useIntlayer, useLocale } from "lit-intlayer";
-import { getLocalizedUrl, getLocaleName, getPathWithoutLocale, type Locales, type LocalesValues } from "intlayer";
+import { getLocalizedUrl, getLocaleName, type LocalesValues } from "intlayer";
 
 class LitDemo extends LitElement {
   static properties = {
@@ -11,10 +11,13 @@ class LitDemo extends LitElement {
   locale: LocalesValues = "en" as LocalesValues;
   _count = 0;
 
-  private _content = useIntlayer(this, "lit-demo");
+  private _content = useIntlayer("lit-demo").observe(this);
   private _localeCtrl = useLocale(this, {
     onLocaleChange: (newLocale: LocalesValues) => {
-      window.location.href = getLocalizedUrl(window.location.pathname, newLocale);
+      window.location.href = getLocalizedUrl(
+        window.location.pathname,
+        newLocale,
+      );
     },
   });
 
@@ -31,7 +34,11 @@ class LitDemo extends LitElement {
 
   override render() {
     const { greeting, description, counter, increment } = this._content;
-    const { locale: currentLocale, availableLocales, setLocale } = this._localeCtrl;
+    const {
+      locale: currentLocale,
+      availableLocales,
+      setLocale,
+    } = this._localeCtrl;
 
     return html`
       <div class="demo-container">
@@ -57,15 +64,16 @@ class LitDemo extends LitElement {
                   }}
                 >
                   <div class="ls-item-left">
-                    <span class="ls-own-name">${getLocaleName(localeItem)}</span>
-                    <span class="ls-current-name">${getLocaleName(
-                      localeItem,
-                      currentLocale
-                    )}</span>
+                    <span class="ls-own-name"
+                      >${getLocaleName(localeItem)}</span
+                    >
+                    <span class="ls-current-name"
+                      >${getLocaleName(localeItem, currentLocale)}</span
+                    >
                   </div>
                   <span class="ls-code">${localeItem.toUpperCase()}</span>
                 </button>
-              `
+              `,
             )}
           </div>
         </div>

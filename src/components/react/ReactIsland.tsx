@@ -4,18 +4,20 @@ import { IntlayerProvider, useIntlayer, useLocale } from "react-intlayer";
 import { getLocalizedUrl, getLocaleName, type LocalesValues } from "intlayer";
 
 function LocaleSwitcher() {
+  const { switchLocale } = useIntlayer("react-demo");
+
   const { locale, availableLocales, setLocale } = useLocale({
     onLocaleChange: (newLocale: LocalesValues) => {
       window.location.href = getLocalizedUrl(
         window.location.pathname,
-        newLocale
+        newLocale,
       );
     },
   });
 
   return (
     <div className="locale-switcher">
-      <span className="switcher-label">Switch locale:</span>
+      <span className="switcher-label">{switchLocale}:</span>
       <div className="locale-buttons">
         {availableLocales.map((localeItem) => (
           <button
