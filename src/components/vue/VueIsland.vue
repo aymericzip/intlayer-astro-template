@@ -24,7 +24,7 @@ const { greeting, description, counter, increment } = useIntlayer("vue-demo");
 <template>
   <div class="demo-container">
     <h2 class="greeting">
-      <greeting />
+      {{greeting}}
     </h2>
     <p class="description">
       <description />
