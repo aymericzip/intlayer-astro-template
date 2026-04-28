@@ -34,8 +34,10 @@ const content = useIntlayer("vue-demo");
       {{ content.description }}
     </p>
     <div class="counter-section">
-      <p class="counter-text">{{ content.counter({ count: count }) }}</p>
-      <button class="btn-primary" @click="count++">{{content.increment}}</button>
+      <p class="counter-text">{{ content.counter({ count }) }}</p>
+      <button class="btn-primary" @click="count++">
+        {{ content.increment }}
+      </button>
     </div>
     <div class="locale-switcher">
       <span class="switcher-label">{{ content.switchLocale }}:</span>
