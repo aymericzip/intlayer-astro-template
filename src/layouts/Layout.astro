@@ -9,8 +9,8 @@ interface Props {
   keywords?: string[];
 }
 
-const { title = "Astro + Intlayer", description, keywords } = Astro.props;
-const locale = getLocaleFromPath(Astro.url.pathname) as LocalesValues;
+const { title, description, keywords } = Astro.props;
+const locale = getLocaleFromPath(Astro.url.pathname);
 const homeUrl = getLocalizedUrl("/", locale);
 ---
 
