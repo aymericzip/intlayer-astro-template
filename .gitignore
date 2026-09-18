@@ -25,3 +25,7 @@ pnpm-debug.log*
 
 # Intlayer
 .intlayer
+
+
+bun.lock
+package-lock.json
