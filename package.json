@@ -31,7 +31,7 @@
     "react-intlayer": "latest",
     "solid-intlayer": "latest",
     "solid-js": "^1.9.15",
-    "svelte": "^5.57.0",
+    "svelte": "^5.57.1",
     "svelte-intlayer": "latest",
     "vanilla-intlayer": "latest",
     "vue": "^3.5.43",
@@ -40,6 +40,6 @@
   "devDependencies": {
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3"
   }
 }
